@@ -2,4 +2,6 @@
 
 QuickOrder is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling.
 
+Go learn laravel
+
 Use --Composer install to start the project
