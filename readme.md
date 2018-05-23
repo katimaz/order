@@ -36,4 +36,5 @@ chmod -R 777 storage
 chmod -R 777 bootstrap/cache
 
 ######### DB Table #########
+
 php artisan migrate
