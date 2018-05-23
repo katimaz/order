@@ -3,14 +3,17 @@
 QuickOrder is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling.
 
 #########Clone github#########
+
 git clone https://github.com/katimaz/order order
 
 #########install composer#########
+
 apt-get composer
 
 composer install
 
 #########Install php 7.1#########
+
 sudo add-apt-repository ppa:ondrej/php
 sudo apt-get update
 
