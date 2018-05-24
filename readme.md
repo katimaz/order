@@ -38,3 +38,9 @@ chmod -R 777 bootstrap/cache
 ######### DB Table #########
 
 php artisan migrate
+
+######### HTACCESS #########
+
+Enable mod_rewrite on the apache server: sudo a2enmod rewrite.
+Edit /etc/apache2/apache2.conf, changing the "AllowOverride" directive for the /var/www directory (which is my main document root): AllowOverride All
+Then restart the Apache server: service apache2 restart
