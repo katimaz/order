@@ -18,7 +18,7 @@ if ($uri !== '/' && file_exists(__DIR__.'/public'.$uri)) {
     return false;
 }
 //12312312
-//dadsa
+//dadsass
 //123s	
 //asd
 require_once __DIR__.'/public/index.php';
