@@ -22,18 +22,19 @@
                                     <h4 class="text-muted">{{$promotion->promotion_title}}</h4>
                                     <h1>{{$promotion->name}}</h1>
                                     <div class="btn-group">
-                                        <a href="{{url('addToList/?id='.$promotion->product_id.'&qty=1')}}" class="btn btn-outline-primary btn-lg"><span>Add to list</span></a>
-                                        <span class="price price-lg">
-                                        <div class="input-group input-number-group">
-                                            <div class="input-group-button">
-                                                <span class="input-number-decrement">-</span>
-                                            </div>
-                                            <input class="input-number" type="number" value="1" min="1" max="20" readonly>
-                                            <div class="input-group-button">
-                                                <span class="input-number-increment">+</span>
-                                            </div>
-                                        </div>
-                                    </span>
+                                        <span qty="1" product_id="{{$promotion->product_id}}" price="{{$promotion->price}}" class="btn btn-outline-primary btn-lg add-to-list"><span>Add to list</span></span>
+                                        <span class="price price-lg">from ${{$promotion->price}}</span>
+                                        {{--<span class="price price-lg">--}}
+                                            {{--<div class="input-group input-number-group">--}}
+                                                {{--<div class="input-group-button">--}}
+                                                    {{--<span class="input-number-decrement">-</span>--}}
+                                                {{--</div>--}}
+                                                {{--<input class="input-number" type="number" value="1" min="1" max="20" readonly>--}}
+                                                {{--<div class="input-group-button">--}}
+                                                    {{--<span class="input-number-increment">+</span>--}}
+                                                {{--</div>--}}
+                                            {{--</div>--}}
+                                        {{--</span>--}}
                                     </div>
                                 </div>
                             @endforeach
@@ -84,7 +85,7 @@
             }'>
                 @foreach($menus as $menu)
                     <div class="menu-sample">
-                        <a href="{{url('menu#'.$menu->name)}}">
+                        <a href="{{url('order/menu#'.$menu->name)}}">
                             <img src="public/{{$menu->image_url}}" alt="" class="image">
                             <h3 class="title">{{$menu->name}}</h3>
                         </a>

@@ -1,6 +1,7 @@
 @extends('layouts.main')
 
 @section('style')
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <style>
         .input-number-group {
             display: -webkit-flex;
@@ -117,19 +118,23 @@
                                                         <img class="mb-4" src="/public/{{$productMenu->product_image_url}}" alt="">
                                                         <h6 class="mb-0">{{$productMenu->product_name}}</h6>
                                                         <span class="text-muted text-sm">{{$productMenu->description}}</span>
+                                                        {{--<div class="row align-items-center mt-4">--}}
+                                                            {{--<div class="col-sm-6" href="12">--}}
+                                                                {{--<div class="input-group input-number-group">--}}
+                                                                    {{--<div class="input-group-button">--}}
+                                                                        {{--<span class="input-number-decrement">-</span>--}}
+                                                                    {{--</div>--}}
+                                                                    {{--<input class="input-number" type="number" value="1" min="1" max="20" readonly>--}}
+                                                                    {{--<div class="input-group-button">--}}
+                                                                        {{--<span class="input-number-increment">+</span>--}}
+                                                                    {{--</div>--}}
+                                                                {{--</div>--}}
+                                                            {{--</div>--}}
+                                                            {{--<div class="col-sm-6 text-sm-right mt-2 mt-sm-0"><a class="btn btn-outline-secondary btn-sm add-to-list" href="{{url('addToList/?id='.$productMenu->product_id.'&qty=1')}}"><span>Add to list</span></a></div>--}}
+                                                        {{--</div>--}}
                                                         <div class="row align-items-center mt-4">
-                                                            <div class="col-sm-6" href="12">
-                                                                <div class="input-group input-number-group">
-                                                                    <div class="input-group-button">
-                                                                        <span class="input-number-decrement">-</span>
-                                                                    </div>
-                                                                    <input class="input-number" type="number" value="1" min="1" max="20" readonly>
-                                                                    <div class="input-group-button">
-                                                                        <span class="input-number-increment">+</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-sm-6 text-sm-right mt-2 mt-sm-0"><a class="btn btn-outline-secondary btn-sm add-to-list" href="{{url('addToList/?id='.$productMenu->product_id.'&qty=1')}}"><span>Add to list</span></a></div>
+                                                            <div class="col-sm-6"><span class="text-md mr-4"><span class="text-muted">from</span> ${{$productMenu->price}}</span></div>
+                                                            <div class="col-sm-6 text-sm-right mt-2 mt-sm-0"><span class="btn btn-outline-secondary btn-sm add-to-list" qty="1" product_id="{{$productMenu->product_id}}" price="{{$productMenu->price}}"><span>Add to list</span></span></div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -143,13 +148,15 @@
                 </div>
             </div>
         </div>
-
     </div>
 
 @endsection
 
 @section('script')
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script>
+
+
         $('.input-number-increment').click(function() {
             var $input = $(this).parents('.input-number-group').find('.input-number');
             var val = parseInt($input.val(), 10);
@@ -177,6 +184,5 @@
                 $(this).parents('.col-sm-6').siblings('div').find('a').attr('href',str);
             }
         })
-
     </script>
 @endsection

@@ -70,14 +70,17 @@ Route::get('/printOrder/{id}', 'PrinterController@printOrder')->name('printOrder
 
 /*********************  Frontend  *********************/
 
-Route::get('/addToList', 'HomeController@getAddToList')->name('addToList');
+Route::post('/addToList', 'HomeController@getAddToList')->name('addToList');
 Route::get('/order/change', 'HomeController@changeQty')->name('change');
 Route::get('/order/remove', 'HomeController@remove')->name('remove');
-Route::get('/order/confirm', 'HomeController@confirm')->name('confirm');
+Route::post('/order/confirm', 'HomeController@confirm')->name('confirm');
+Route::get('/order/detail', 'HomeController@detail')->name('detail');
+Route::get('/order/checkout', 'HomeController@checkout')->name('checkout');
 Route::get('/order/order-list', 'HomeController@orderList')->name('orderList');
 Route::get('/order/menu', 'HomeController@menu')->name('menu');
 Route::post('/order/validCode', 'HomeController@validCode')->name('validCode');
 Route::get('/order/kitchen', 'HomeController@kitchen')->name('kitchen');
+Route::post('/order/getOrder', 'HomeController@getOrder')->name('getOrder');
 
 /*********************  End Frontend  *********************/
 

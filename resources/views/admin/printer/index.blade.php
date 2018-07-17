@@ -19,7 +19,8 @@
             <th>Name</th>
             <th>Account</th>
             <th>Key</th>
-            <th>SN</th>
+            <th>Printer SN</th>
+            <th>Printer Key</th>
             <th>Printer Type</th>
             <th>Action</th>
         </tr>
@@ -30,7 +31,8 @@
                 <td>{{$printer->printer_name}}</td>
                 <td>{{$printer->account}}</td>
                 <td>{{$printer->account_key}}</td>
-                <td>{{$printer->account_sn}}</td>
+                <td>{{$printer->printer_sn}}</td>
+                <td>{{$printer->printer_key}}</td>
                 <td>{{$printer->name}}</td>
                 <td>
                     <a href="{{url('admin/printer/modify/'.$printer->printer_id)}}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> Edit</a>

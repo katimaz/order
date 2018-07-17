@@ -14,5 +14,6 @@
 
 <!-- JS Core -->
 <script src="/public/assets/js/core.js"></script>
+<script src="/public/js/jquery.blockUI.js"></script>
 
 @yield('script')

@@ -7,7 +7,6 @@ use App\Order;
 use App\PrintCode;
 use App\Printer;
 use App\PrinterType;
-use App\Product;
 use Illuminate\Http\Request;
 use App\User;
 use App\Menu;
@@ -16,8 +15,12 @@ use Image;
 use DB;
 use Auth;
 
+header('Content-Type: text/html; charset=utf-8');
+
 class AdminController extends Controller
 {
+    use \App\Traits\Printer;
+
     public function __construct()
     {
         $this->middleware('auth');
@@ -82,7 +85,7 @@ class AdminController extends Controller
 
     public function deleteProduct($id)
     {
-        Product::destroy($id);
+        MenuProduct::destroy($id);
 
         return redirect('admin/product');
     }
@@ -204,7 +207,7 @@ class AdminController extends Controller
                    and orders.id = :id
                    group by orders.id,order_foods.product_id,order_foods.quantity', ['id' => $id,'restaurant_id' => Auth::user()->restaurant_id]);
 
-        $order = Order::find($id)->first();
+        $order = Order::where('id',$id)->first();
 
         return view('admin.order.detail',compact('order','orderFoods'));
     }
@@ -268,9 +271,15 @@ class AdminController extends Controller
         $printer->name = $request->name;
         $printer->account = $request->account;
         $printer->account_key = $request->account_key;
-        $printer->account_sn = $request->account_sn;
+        $printer->printer_sn = $request->printer_sn;
+        $printer->printer_key = $request->printer_key;
         $printer->printer_type_id = $request->printer_type_id;
         $printer->save();
+
+        //$snlist = $printer->account_sn.$printer->account_key."#remark1#carnum1\nsn2#key2#remark2#carnum2";
+
+        $this->setPrinter($request->account, $request->account_key, $request->printer_sn);
+        $snlist = $request->printer_sn.'#'.$request->printer_key;
 
         return redirect('admin/printer');
     }
