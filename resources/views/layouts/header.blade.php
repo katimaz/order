@@ -16,7 +16,7 @@
                 <nav class="module module-navigation left mr-4">
                     <ul id="nav-main" class="nav nav-main">
                         <li><a href="{{url('order/menu')}}"><span>Menu</span></a></li>
-                        <li><a href="{{url('order/order-list')}}"><span>My Orders</span></a>
+                        <li><a href="{{url('order/order-list')}}"><span>Check My Order</span></a>
                     </ul>
                 </nav>
                 {{--<div class="module left">--}}
@@ -26,13 +26,14 @@
             </div>
             <div class="col-md-2">
                 <a href="#" class="module module-cart right" data-toggle="panel-cart">
-						@if(Session::has('tableId'))
-							<span class="cart-value">Table : {{Session::get('tableId')}}</span>
-						@endif
-                        <span class="cart-icon">
-                            <i class="ti ti-shopping-cart"></i>
-                            <span class="notification">{{Session::has('cart')?Count(Session::get('cart')->items):0}}</span>
-                        </span>
+                    @if(Session::has('tableId'))
+                    	<span class="cart-value">Table : {{Session::get('tableId')}}</span>
+                    @endif
+                    <span class="cart-icon">
+                        <i class="ti ti-shopping-cart"></i>
+                        <span class="notification">{{Session::has('cart')?Count(Session::get('cart')->items):0}}</span>
+                    </span>
+                    <span class="cart-value totalPrice" >${{Session::has('cart')?Session::get('cart')->totalPrice:0}}</span>
                 </a>
             </div>
         </div>

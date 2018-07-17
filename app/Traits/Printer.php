@@ -144,7 +144,7 @@ trait Printer {
 //queryPrinterStatus(SN);
 
 
-    function addprinter($snlist)
+    function add_printer($snlist)
     {
         $content = array(
             'user' => $this->USER,
@@ -156,10 +156,11 @@ trait Printer {
         );
 
         $client = $this->printerRequest;
+
         if (!$client->post($this->PATH, $content)) {
             echo 'error';
         } else {
-            echo $client->getContent();
+            return $client->getContent();
         }
 
     }
@@ -188,9 +189,8 @@ trait Printer {
             return 'error';
         } else {
             //服务器返回的JSON字符串，建议要当做日志记录起来
-            echo $client->getContent();
+            $client->getContent();
         }
-
     }
 
 

@@ -41,6 +41,10 @@ class HomeController extends Controller
         return view('home.index');
     }
 
+    public function checkout(){
+        return view('checkout');
+    }
+
     /**
      * Show the application dashboard.
      *
@@ -103,15 +107,30 @@ class HomeController extends Controller
 
     public function getAddToList(Request $request){
         $product = MenuProduct::find($request->id);
-        $this->cart->add($product,$product->id,$request->qty);
+        $this->cart->add($product,$product->id,$request->qty,$request->price);
         $request->session()->put('cart',$this->cart);
-        return redirect('order/menu');
+//        return redirect('order/menu');
+
+//        dd($this->cart);
+//        $totalqty = count($this->cart->items);
+//        $total_price =$this->cart->totalPrice;
+        $result = json_encode($this->cart);
+        return $result;
     }
 
     public function changeQty(Request $request){
-        $this->cart->changeQty($request->id,$request->qty);
+        $this->cart->changeQty($request->id,$request->qty,$request->price);
         $request->session()->put('cart',$this->cart);
-        return $this->cart->totalQty;
+
+        $jsonBody = json_encode(
+            [
+                'totalQty'=>$this->cart->totalQty,
+                'totalPrice' => $this->cart->totalPrice,
+                'price'=>($request->qty*$request->price)
+            ]
+        );
+
+        return $jsonBody;
 
     }
 
@@ -135,32 +154,112 @@ class HomeController extends Controller
         return view('orderList',compact('orderFoods'));
     }
 
+    public function detail(Request $request){
+
+        return view('orderDetail');
+    }
     public function confirm(Request $request){
-        if(Session::has('tableId') && Session::has('printCode')){
+//        if(Session::has('tableId') && Session::has('printCode')){
 
             if($this->cart->items !=null){
-                $order = Order::where('table_id', Session::get('tableId'))->first();
-                if($order === null){
+                $printData = '<CB>QuickOrder</CB><BR><BR>';
+                if($request->order_type ==1){
+                    $order = Order::where('table_id', $request->table_id)->where('paid','0')->first();
+                    if($order === null){
+
+                        $order = new Order;
+                        $order->table_id = $request->table_id;
+                        $order->restaurant_id = $request->restaurant_id;
+                        $order->order_type_id = $request->order_type;
+                        $order->payment_type = $request->payment_type;
+                    }
+
+                    $order->quantity += $this->cart->totalQty;
+                    $order->price += $this->cart->totalPrice;
+                    $order->save();
+
+                    $printData .= '<B>堂食單</B><BR><BR>';
+                    $printData .= '<B>枱號 : '.$order->table_id.'</B><BR><BR>';
+
+                }elseif($request->order_type ==2){
+
                     $order = new Order;
-                    $order->table_id = Session::get('tableId');
+                    $order->table_id = 0;
+                    $order->restaurant_id = $request->restaurant_id;
+                    $order->order_type_id = $request->order_type;
+
+                    $order->customer_name = $request->name;
+                    $order->customer_email = $request->email;
+                    $order->customer_phone = $request->phone;
+                    $order->customer_pickup_time = $request->pickup_time;
+                    $order->payment_type = $request->payment_type;
+
+                    $order->quantity = $this->cart->totalQty;
+                    $order->price = $this->cart->totalPrice;
+                    $order->save();
+
+                    $printData .= '<B>外賣單</B><BR><BR>';
+                    $printData .= '<B>訂單號 : '.$order->id.'</B><BR><BR>';
+                    $printData .= '客人名稱 : '.$request->name.'<BR><BR>';
+                    $printData .= '客人電話 : '.$request->phone.'<BR><BR>';
+                    $printData .= '取餐時間 : '.$request->pickup_time.'<BR><BR>';
+
+                }else{
+
                 }
-                $order->quantity += $this->cart->totalQty;
-                $order->restaurant_id = $request->restaurantId;
-                $order->order_type_id = $request->orderTypeId;
-                $order->save();
+
+                $kitchenData = '<CB>QuickOrder</CB><BR><BR>';
+                $kitchenData .= '<RIGHT>名稱　　　　　     數量</RIGHT><BR>';
                 foreach($this->cart->items as $item){
+
                     $orderFood = new OrderFood;
                     $orderFood->order_id = $order->id;
                     $orderFood->product_id = $item['items']->id;
-                    $orderFood->quantity = $item['qty'];;
+                    $orderFood->quantity = $item['qty'];
+                    $orderFood->price = $item['price'];
                     $orderFood->save();
+
+                    $kitchenData .= '<RIGHT>'.$item['items']->name. '　　　　 　     ' . $item['qty'] . '</RIGHT><BR>';
                 }
+
+                    $kitchenData .= '--------------------------------<BR>';
+
+                $this->setPrinter("bjtuwangjia@gmail.com", "ebIRPMY3Zr5ISM2u", "918508667");
+                $this->getPrint($kitchenData);
+
+                $this->setPrinter("bjtuwangjia@gmail.com", "ebIRPMY3Zr5ISM2u", "718500818");
+                $this->getPrint($kitchenData);
+
+                $orderFoods = OrderFood::join('orders', 'orders.id', 'order_foods.order_id')
+                    ->join('menu_products', 'menu_products.id', 'order_foods.product_id')
+                    ->select('*', 'order_foods.quantity as order_food_quantity','order_id as orders.id')
+                    ->where('order_id', $order->id)
+                    ->get();
+
+
+                $printData .= '<RIGHT>名稱　　　　　 金額  數量</RIGHT><BR>';
+                $printData .= '--------------------------------<BR>';
+
+                foreach($orderFoods as $orderFood){
+                    $printData .= '<RIGHT>'.$orderFood->name . '　　　　 　' . $orderFood->price . '   ' . $orderFood->order_food_quantity . '</RIGHT><BR>';
+                }
+
+                $printData .= '--------------------------------<BR>';
+                $printData .= '<QR>http://www.hkqos.com</QR>';//把二维码字符串用标签套上即可自动生成二维码;
+
+                $this->setPrinter("bjtuwangjia@gmail.com", "ebIRPMY3Zr5ISM2u", "918508667");
+                $this->getPrint($printData);
+
+                $this->setPrinter("bjtuwangjia@gmail.com", "ebIRPMY3Zr5ISM2u", "718500818");
+                $this->getPrint($printData);
+
                 $request->session()->put('cart',$this->cart);
                 $request->session()->forget('cart');
-                return view('confirmation');
+                return view('confirmation',compact('order'));
             }
-        }
-        return  redirect('order/menu');
+//        }
+
+        return redirect('order/menu');
     }
 
     public function kitchen(){
@@ -175,5 +274,19 @@ class HomeController extends Controller
             ->get();
 
         return view('kitchen',compact('orderFoods'));
+    }
+
+    public function getOrder(Request $request){
+
+        $orderFoods  = DB::select('SELECT orders.id,order_foods.product_id,sum(order_foods.quantity) as sum_quantity,sum(order_foods.price) as sum_price,menu_products.name,menu_products.description,menu_products.image_url,orders.paid FROM `orders`,`order_foods`,menu_products
+                   WHERE orders.id = order_foods.order_id
+                   and order_foods.product_id = menu_products.id
+                   and orders.customer_phone = :phone_number
+                   and orders.paid = :paid
+                   group by orders.id,order_foods.product_id,order_foods.quantity', ['phone_number' => $request->order_phone,'paid'=>0]);
+
+        $order = Order::where('customer_phone',$request->order_phone)->first();
+
+        return view('orderList',compact('orderFoods','order'));
     }
 }

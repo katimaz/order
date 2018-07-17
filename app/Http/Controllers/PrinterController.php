@@ -43,14 +43,15 @@ class PrinterController extends Controller
             ->select('*', 'order_foods.quantity as order_food_quantity')
             ->where('order_foods.id', $id)
             ->first();
-
-        $printData = '<CB>送餐單</CB><BR>';
+        $printData = '<CB>QuickOrder</CB><BR><BR>';
+        $printData .= '<CB>送餐單</CB><BR>';
         $printData .= '名稱　　　　　 桌號  數量 <BR>';
         $printData .= '--------------------------------<BR>';
         $printData .= $orderFood->name . '　　　　 　' . $orderFood->table_id . '   ' . $orderFood->order_food_quantity . '<BR>';
         $printData .= '--------------------------------<BR>';
+        $printData .= '<QR>http://www.hkqos.com</QR>';//把二维码字符串用标签套上即可自动生成二维码;
 
-        $this->setPrinter("bjtuwangjia@gmail.com", "ebIRPMY3Zr5ISM2u", "918501940");
+        $this->setPrinter("bjtuwangjia@gmail.com", "ebIRPMY3Zr5ISM2u", "918508667");
         $this->getPrint($printData);
 
         $orderFood = OrderFood::find($id);

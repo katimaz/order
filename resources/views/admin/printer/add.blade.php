@@ -36,9 +36,15 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-2" for="name">Account SN:</label>
+                        <label class="control-label col-sm-2" for="name">Print Key:</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" id="name" placeholder="Enter Account SN" name="account_sn">
+                            <input type="text" class="form-control" id="name" placeholder="Enter Printer Key" name="printer_key">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="name">Print SN:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="name" placeholder="Enter Printer SN" name="printer_sn">
                         </div>
                     </div>
                     <div class="form-group">

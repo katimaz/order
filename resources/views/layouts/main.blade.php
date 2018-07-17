@@ -143,24 +143,24 @@
 
     @include('layouts.footer')
     {{--@include('layouts.model')--}}
-    @if(!session()->has('printCode'))
-        <div id="my_popup" class="well">
-            <form action="{{url('order/validCode')}}" method="post">
-                @csrf
-                @if(!session()->has('tableId'))
-                <div class="form-group">
-                    <label>Table Id</label>
-                    <input type="text" class="form-control" id="tableId" name="tableId" placeholder="Enter Table Id">
-                </div>
-                @endif
-                <div class="form-group">
-                    <label>Input Code</label>
-                    <input type="text" class="form-control" id="printCode" name="print_code" placeholder="Enter Code">
-                </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
-        </div>
-    @endif
+    {{--@if(!session()->has('printCode'))--}}
+        {{--<div id="my_popup" class="well">--}}
+            {{--<form action="{{url('order/validCode')}}" method="post">--}}
+                {{--@csrf--}}
+                {{--@if(!session()->has('tableId'))--}}
+                {{--<div class="form-group">--}}
+                    {{--<label>Table Id</label>--}}
+                    {{--<input type="text" class="form-control" id="tableId" name="tableId" placeholder="Enter Table Id">--}}
+                {{--</div>--}}
+                {{--@endif--}}
+                {{--<div class="form-group">--}}
+                    {{--<label>Input Code</label>--}}
+                    {{--<input type="text" class="form-control" id="printCode" name="print_code" placeholder="Enter Code">--}}
+                {{--</div>--}}
+                {{--<button type="submit" class="btn btn-primary">Submit</button>--}}
+            {{--</form>--}}
+        {{--</div>--}}
+    {{--@endif--}}
     @include('layouts.script')
     <script src="https://cdn.rawgit.com/vast-engineering/jquery-popup-overlay/1.7.13/jquery.popupoverlay.js"></script>
     <script>
@@ -176,31 +176,45 @@
         });
     </script>
     <script>
-        $('.cart-increment').click(function() {
+        $('#cart-item').on('click','.cart-increment',function () {
+            console.log("cart-increment");
+            var $totalPrice = $(this).parents().parents('#one-item').find('.price');
             var $input = $(this).parents('.input-number-group').find('.input-number');
+            var $price = $(this).parents('.input-number-group').find('.single-price');
             var val = parseInt($input.val(), 10);
+            var single_price = $price.val();
+
             if (val < 20 ){
                 $input.val(val + 1);
                 $.ajax({
                     type: 'get',
-                    url: "change?id="+$input.attr('id')+"&qty="+(val+1),
+                    url: "change?id="+$input.attr('id')+"&qty="+(val+1)+"&price="+single_price,
                     success: function(result){
-                        $('#totalQty').text(result);
+                        $json = JSON.parse(result);
+                        $('.totalPrice').text("$"+$json['totalPrice']);
+                        $totalPrice.text("$"+$json['price'])
                     }
                 });
             }
         });
 
-        $('.cart-decrement').click(function() {
+        $('#cart-item').on('click','.cart-decrement',function () {
+            console.log("cart-decrement");
+            var $totalPrice = $(this).parents().parents('#one-item').find('.price');
             var $input = $(this).parents('.input-number-group').find('.input-number');
+            var $price = $(this).parents('.input-number-group').find('.single-price');
             var val = parseInt($input.val(), 10);
+            var single_price = $price.val();
+
             if(val > 1){
                 $input.val(val - 1);
                 $.ajax({
                     type: 'get',
-                    url: "change?id="+$input.attr('id')+"&qty="+(val-1),
+                    url: "change?id="+$input.attr('id')+"&qty="+(val-1)+"&price="+single_price,
                     success: function(result){
-                        $('#totalQty').text(result);
+                        $json = JSON.parse(result);
+                        $('.totalPrice').text("$"+$json['totalPrice']);
+                        $totalPrice.text("$"+$json['price'])
                     }
                 });
             }
@@ -213,6 +227,80 @@
                 success: function(result){
                     console.log(result);
                 }
+            });
+        });
+
+        $('.add-to-list').click(function(){
+            product_id = $(this).attr("product_id");
+            qty = $(this).attr("qty");
+            price = $(this).attr("price");
+
+            $.ajax({
+                type: 'post',
+                data: {price : price,qty : qty,id : product_id, _token: '{{csrf_token()}}'},
+                url: '/addToList',
+                success: function(result) {
+                    $('#cart-item').empty();
+                    $json = JSON.parse(result);
+//                    console.log($json['totalPrice']);
+//                    console.log($json['totalQty']);
+                    html ='<tbody>';
+                    for(var k in $json['items']) {
+//                        console.log(k, $json['items'][k]);
+//                        console.log(k, $json['items'][k]['items']['name']);
+                        html +=
+                            '<tr id="one-item">' +
+                            '   <td class="title">' +
+                            '       <span class="name"><a>'+$json['items'][k]['items']['name']+'</a></span>' +
+                            '       <span class="caption text-muted">'+$json['items'][k]['items']['description']+'</span>' +
+                            '   </td>' +
+                            '   <td class="prices">$'+$json['items'][k]['singleprice']+'</td>' +
+                            '   <td class="price">$'+$json['items'][k]['price']+'</td>' +
+                            '   <td class="qty">' +
+                            '       <div class="input-group input-number-group">' +
+                            '           <div class="input-group-button">' +
+                            '               <span class="cart-decrement">-</span>' +
+                            '           </div>' +
+                            '           <input id="'+$json['items'][k]['items']['id']+'" class="input-number" type="number" value="'+$json['items'][k]['qty']+'" min="1" max="20"' +
+                            '                  readonly>' +
+                            '           <input class="single-price" type="hidden" value="'+$json['items'][k]['singleprice']+'">' +
+                            '           <div class="input-group-button">' +
+                            '               <span class="cart-increment">+</span>' +
+                            '           </div>' +
+                            '       </div>' +
+                            '   </td>' +
+                            '   <td class="actions">' +
+                            '       <a id="'+$json['items'][k]['items']['id']+'" href="" class="action-icon remove"><i class="ti ti-close"></i></a>' +
+                            '   </td>' +
+                            '</tr>';
+                    }
+                    html+='</tbody>';
+
+                    $('#cart-item').html(html);
+
+                    $('.totalPrice').text('$'+$json['totalPrice']);
+                    $('.notification').text(Object.keys(($json['items'])).length);
+
+                    $.blockUI({
+                        css: {
+                            padding: '30px',
+                        },
+                        message: '<h5 style="margin: 0px"><img src="/public/image/busy.gif" /> Just a moment...</h5>'
+                    });
+
+                    setTimeout($.unblockUI, 1000)
+
+//                    $("#dialog").dialog({
+//                        modal: true,
+//                        resizable:false,
+//                        draggable: false,
+//                        open: function (event, ui) {
+//                            setTimeout(function () {
+//                                $("#dialog").dialog("close");
+//                            }, 1000);
+//                        }
+//                    });
+                },
             });
         });
     </script>
